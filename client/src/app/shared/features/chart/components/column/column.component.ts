@@ -3,12 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  EventEmitter,
   Inject,
   Input,
   NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   PLATFORM_ID,
   SimpleChanges,
   ViewChild
@@ -35,6 +37,8 @@ export class ColumnComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     first: number;
     second: number;
   }>;
+
+  @Output() onChartLegendChange: EventEmitter<any> = new EventEmitter<any>();
 
   private chart: am4charts.XYChart;
 
@@ -151,6 +155,16 @@ export class ColumnComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       chart.data = this.data;
       this.chart = chart;
 
+      //Huong Uy - add "hit" event on legend chart
+      chart.legend.itemContainers.template.events.on("hit", (ev) => {
+        const name = ev.target.dataItem.dataContext['_legendDataItem']['name'];
+        const active = ev.target['_isActive'];
+        let activedItems = [];
+        const filteredData = chart.legend.labels?.values?.filter(item => {return (name === item?.currentText && active) || (name !== item?.currentText && !item?.isActive);})
+                                              .map(n => n.currentText);
+        activedItems = [...activedItems, ...filteredData];
+        this.onChartLegendChange.emit(activedItems);
+      });
     });
   }
 
