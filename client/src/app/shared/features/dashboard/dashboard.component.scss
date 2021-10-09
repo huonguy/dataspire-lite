@@ -18,3 +18,14 @@
 .dashboard-card-content {
   text-align: center;
 }
+
+table {
+  width: 100%;
+}
+
+.filter-section{
+  display: flex;
+  justify-content: flex-end;
+  margin: 5px 0;
+  font-size: 12px
+}
